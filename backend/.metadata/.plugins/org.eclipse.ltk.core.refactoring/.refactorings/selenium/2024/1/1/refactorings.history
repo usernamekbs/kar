@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;Cafe24Coupang.java&apos; to &apos;selenium/src/test/java/com.kick&apos;&#x0D;&#x0A;- Original project: &apos;selenium&apos;&#x0D;&#x0A;- Destination element: &apos;selenium/src/test/java/com.kick&apos;&#x0D;&#x0A;- Original element: &apos;com.kick.Cafe24Coupang.java&apos;" description="Copy compilation unit" destination="/src\/test\/java=/gradle_scope=/test=/=/gradle_used_by_scope=/test=/=/test=/true=/&lt;com.kick" element1="/src\/test\/java=/gradle_scope=/test=/=/gradle_used_by_scope=/test=/=/test=/true=/&lt;com.kick{Cafe24Coupang.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1704468190070" units="1" version="1.0"/>
+</session>

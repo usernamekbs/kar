@@ -1,0 +1,629 @@
+package com.kick;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.Select;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
+
+import java.awt.image.BufferedImage;
+
+@SpringBootTest
+class SeleniumApplicationTests {
+
+//	@Autowired ExcelDownloadService ExcelDownloadservice;
+	
+	//트라이 코지 trycozy
+	@Test
+	void contextLoads() throws IOException, InterruptedException {
+			WebDriver driver = new ChromeDriver();
+			
+			 //워크북 생성
+		    XSSFWorkbook workbook = new XSSFWorkbook();
+		    //워크시트 생성
+		    XSSFSheet sheet = workbook.createSheet();
+		    //행 생성
+		    XSSFRow row = sheet.createRow(0);
+		    //셀 생성
+		    XSSFCell cell;
+		    cell = row.createCell(0);
+		    cell.setCellValue("title");
+		    cell = row.createCell(1);
+		    cell.setCellValue("price");
+		    cell = row.createCell(2);
+		    cell.setCellValue("company");
+		    cell = row.createCell(3);
+		    cell.setCellValue("option");
+		    cell = row.createCell(4);
+		    cell.setCellValue("썸네일");
+		    cell = row.createCell(5);
+		    cell.setCellValue("상세 이미지");
+		    cell = row.createCell(6);
+		    cell.setCellValue("realprice");
+		    cell = row.createCell(11);
+		    cell.setCellValue("카테고리 번호");
+		    cell = row.createCell(7);
+		    cell.setCellValue("option2");
+		    cell = row.createCell(8);
+		    cell.setCellValue("optionSet");
+		    cell = row.createCell(9);
+		    cell.setCellValue("optionSet2");
+		    cell = row.createCell(11);
+		    cell.setCellValue("상품분류");
+		    cell = row.createCell(12);
+		    cell.setCellValue("Y");
+		    
+		    driver.get("https://trycozy.com/member/login.html");
+	        WebElement member_id=driver.findElement(By.id("member_id"));
+	        WebElement member_passwd=driver.findElement(By.id("member_passwd"));
+	        WebElement login=driver.findElement(By.cssSelector("form > div > div > fieldset > a > img"));
+	        member_id.sendKeys("qudtn6085");
+	        member_passwd.sendKeys("qudtn4589");
+	        login.click();
+	     
+	        Thread.sleep(5000);
+	        //19까지 함 APPLE
+	        driver.navigate().to("https://trycozy.com/product/list.html?cate_no=483");
+
+	        WebElement totalCount=driver.findElement(By.cssSelector("#contents > div.xans-element-.xans-product.xans-product-normalpackage > div.xans-element-.xans-product.xans-product-normalmenu > div > p > strong"));
+	        														
+	        double dtotalCount=Double.parseDouble(totalCount.getText());
+	        double tcnt=Math.ceil(dtotalCount/20);
+	        
+	        List<String> urls = new ArrayList<>();
+	        List<String> imgs = new ArrayList<>();
+	        List<String> thumbs = new ArrayList<>();
+	        
+	        //tcnt
+	        for(int i=1; i<=33;i++) {
+	        	WebElement nextPage=driver.findElement(By.cssSelector("#contents > div.xans-element-.xans-product.xans-product-normalpaging > p:nth-child(4) > a > img"));
+	        	List<WebElement> elements = driver.findElements(By.cssSelector("#contents > div.xans-element-.xans-product.xans-product-normalpackage > div.xans-element-.xans-product.xans-product-listnormal > ul > li > div > a"));
+	        	
+	        	for(WebElement ele : elements) {
+	        		urls.add(ele.getAttribute("href"));
+	        	}
+	        	nextPage.click();
+	        }
+	        int i=0;
+            
+	        for(String url : urls) {
+	        	driver.navigate().to(url);
+	        	WebElement title=driver.findElement(By.cssSelector("#contents > div.xans-element-.xans-product.xans-product-detail > div.detailArea > div.infoArea > h2"));
+	        	WebElement realprice=driver.findElement(By.xpath("//*[@id=\"contents\"]/div[2]/div[2]/div[2]/div[3]/table/tbody/tr[4]/td/span"));
+	        	WebElement price=driver.findElement(By.cssSelector("#contents > div.xans-element-.xans-product.xans-product-detail > div.detailArea > div.infoArea > div.xans-element-.xans-product.xans-product-detaildesign > table > tbody > tr:nth-child(2) > td > strong > span > strong"));
+	        	WebElement company=driver.findElement(By.xpath("//*[@id=\"contents\"]/div[2]/div[2]/div[2]/div[3]/table/tbody/tr[5]/td/span"));
+	        	
+	        	row = sheet.createRow(i+1);
+                cell = row.createCell(0);
+                cell.setCellValue(title.getText());
+                cell = row.createCell(1);
+                cell.setCellValue(price.getText());
+                cell = row.createCell(2);
+                cell.setCellValue(company.getText());
+                cell = row.createCell(6);
+                cell.setCellValue(realprice.getText());
+	
+                List<WebElement> selectLists = driver.findElements(By.cssSelector("#contents > div.xans-element-.xans-product.xans-product-detail > div.detailArea > div.infoArea > table:nth-child(10) > tbody > tr > td > select"));
+                List<WebElement> thumbLists = driver.findElements(By.cssSelector("#contents > div.xans-element-.xans-product.xans-product-detail > div.detailArea > div.xans-element-.xans-product.xans-product-image.imgArea > div.keyImg > a > img"));
+                List<WebElement> detailImageLists = driver.findElements(By.cssSelector("#prdDetail > div > p > img"));
+                StringBuilder sb3 = new StringBuilder();
+                StringBuilder sb4 = new StringBuilder();
+                
+                String fileName;
+                for(WebElement detailImage : detailImageLists) {
+                		 imgs.add(detailImage.getAttribute("src"));
+	                 	 fileName = detailImage.getAttribute("src").substring(detailImage.getAttribute("src").lastIndexOf("/") + 1);
+	 	        		 String img = "<p align=\"center\">"+"<img src='https://qudtn0295.cafe24.com/detailImage2/"+URLDecoder.decode(fileName,"UTF-8")+"'/>"+"</p>";
+	 	        		 sb3.append(img);
+	 	        		 cell = row.createCell(5);
+	 	        		 cell.setCellValue(sb3.toString());
+		     	        	 
+                }
+                for(WebElement thmb : thumbLists) {
+                		 thumbs.add(thmb.getAttribute("src"));
+	                	 fileName = thmb.getAttribute("src").substring(thmb.getAttribute("src").lastIndexOf("/") + 1);
+	                	 sb4.append(URLDecoder.decode(fileName,"UTF-8"));
+		        		 cell = row.createCell(4);
+		        		 cell.setCellValue(sb4.toString());
+            	}
+                
+                for(WebElement sel : selectLists) {
+	        		Select selectOptions = new Select(sel);
+		        	selectOptions.selectByIndex(2);
+		        	List<WebElement> optionList = selectOptions.getOptions();
+		        	optionList.remove(0);
+		        	StringBuilder sb = new StringBuilder();
+		        	StringBuilder sb2 = new StringBuilder();
+		        	StringBuilder sb5 = new StringBuilder();
+		        	for(WebElement option : optionList) {
+			        		
+		        			if(sel.getAttribute("id").equals("product_option_id1")) {
+				        		if(option.isEnabled()) {
+				        			cell = row.createCell(3);
+				        			sb.append(option.getText()+"|");
+					        		cell.setCellValue("옵션1{"+sb.toString().substring(0, sb.toString().length()-1)+"}");
+					        		cell = row.createCell(8);
+					        		cell.setCellValue("F");
+					        		
+					        		if(option.getText().equals("갤럭시Z플립4(F721)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("161|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}
+					        		else if(option.getText().equals("갤럭시Z플립5(F731)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("225|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}
+					        		
+					        		else if(option.getText().equals("갤럭시Z플립3(F711)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("162|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시Z플립(F700)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("163|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시노트20(N981)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("122|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시노트20울트라(N986)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("123|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시노트10(N971)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("124|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시노트10플러스(N976)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("125|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시노트9(N960)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("126|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}
+					        		
+					        		
+					        		else if(option.getText().equals("갤럭시S23(S911)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("129|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시S23플러스(S916)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("130|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시S23울트라(S918)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("131|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시S22(S901)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("132|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시S22플러스(S906)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("133|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시S22울트라(S908)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("134|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시S21(G991)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("135|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시S21플러스(G996)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("136|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시S21울트라(G998)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("137|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시S20(G981)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("138|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시S20플러스(G986)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("139|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시S20울트라(G988)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("140|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시S10E(G970)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("144|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시S10(G973)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("142|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시S10플러스(G975)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("143|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("갤럭시S10 5G(G977)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("145|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}
+					        		
+					        		else if(option.getText().equals("아이폰14")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("102|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("아이폰14플러스")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("101|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("아이폰14프로")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("100|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("아이폰14프로맥스")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("99|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("아이폰13미니")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("107|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("아이폰13")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("106|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("아이폰13프로")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("105|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("아이폰13프로맥스")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("103|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("아이폰12미니")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("110|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("아이폰12/12프로")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("109|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("아이폰12프로맥스")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("108|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("아이폰11(6.1)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("113|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("아이폰11 Pro(5.8)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("112|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}else if(option.getText().equals("아이폰11 Pro Max(6.5)")) {
+					        			cell = row.createCell(11);
+					        			sb2.append("111|");
+					        			cell.setCellValue(sb2.toString());
+					        			
+					        			cell = row.createCell(12);
+					        			sb5.append("Y|");
+					        			cell.setCellValue(sb5.toString());
+					        		}
+				        		}
+				        		
+			        		}else {
+			        			if(option.isEnabled()) {
+				        			cell = row.createCell(7);
+					        		sb.append(option.getText()+"|");
+					        		cell.setCellValue("//옵션2{"+sb.toString().substring(0, sb.toString().length()-1)+"}");
+					        		cell = row.createCell(9);
+					        		cell.setCellValue("|F");
+					        		
+			        			}
+		        			}
+		        	}
+	        	}
+                
+            	
+            	
+            	i++;
+        		File file = new File("C:\\Users\\15kso\\OneDrive\\바탕 화면\\새 폴더\\옵션.xls");
+	            FileOutputStream fos = null;
+	            fos = new FileOutputStream(file);
+	            workbook.write(fos);
+	            
+	        }
+	        
+	        i=0;
+	        for(String thb : thumbs) {
+	        	 String outputDir = "C:\\Users\\15kso\\OneDrive\\바탕 화면\\새 폴더";
+	             InputStream is = null;
+	             FileOutputStream os = null;
+	             try{
+	                 URL url = new URL(thb);
+	                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	                 int responseCode = conn.getResponseCode();
+
+	                 // Status 가 200 일 때
+	                 if (responseCode == HttpURLConnection.HTTP_OK) {
+	                     String fileName = "";
+
+	                     fileName = thb.substring(thb.lastIndexOf("/") + 1);
+	     	        	 
+	                     is = conn.getInputStream();
+	                     os = new FileOutputStream(new File(outputDir, URLDecoder.decode(fileName,"UTF-8")));
+	                     
+	                     final int BUFFER_SIZE = 4096;
+	                     int bytesRead;
+	                     byte[] buffer = new byte[BUFFER_SIZE];
+	                     while ((bytesRead = is.read(buffer)) != -1) {
+	                         os.write(buffer, 0, bytesRead);
+	                     }
+	                     row = sheet.createRow(i+1);
+	                     cell = row.createCell(4);
+		        		 cell.setCellValue("/images2/"+URLDecoder.decode(fileName,"UTF-8"));
+		        		 File file = new File("C:\\Users\\15kso\\OneDrive\\바탕 화면\\새 폴더\\썸네일.xls");
+	     	             FileOutputStream fos = null;
+	     	             fos = new FileOutputStream(file);
+	     	             workbook.write(fos);
+	                     
+	                     i++;
+	                     os.close();
+	                     is.close();
+	                     System.out.println("======완료=====");
+	                 } else {
+	                     System.out.println("No file to download. Server replied HTTP code: " + responseCode);
+	                 }
+	                 
+	                 conn.disconnect();
+	             } catch (Exception e){
+	                 System.out.println("An error occurred while trying to download a file.");
+	                 e.printStackTrace();
+	                 try {
+	                     if (is != null){
+	                         is.close();
+	                     }
+	                     if (os != null){
+	                         os.close();
+	                     }
+	                 } catch (IOException e1){
+	                     e1.printStackTrace();
+	                 }
+	             }
+	        	}
+	        
+	            i=0;
+	 	        for(String img : imgs) {
+	 	        	 String outputDir2 = "C:\\Users\\15kso\\OneDrive\\바탕 화면\\detailimage";
+	 	             InputStream is = null;
+	 	             FileOutputStream os = null;
+	 	             try{
+	 	                 URL url2 = new URL(img);
+	 	                 HttpURLConnection conn = (HttpURLConnection) url2.openConnection();
+	 	                 int responseCode = conn.getResponseCode();
+
+	 	                 // Status 가 200 일 때
+	 	                 if (responseCode == HttpURLConnection.HTTP_OK) {
+	 	                     String fileName = "";
+
+	 	                     fileName = img.substring(img.lastIndexOf("/") + 1);
+	 	                     is = conn.getInputStream();
+	 	                     os = new FileOutputStream(new File(outputDir2, URLDecoder.decode(fileName,"UTF-8")));
+	 	                     
+	 	                     final int BUFFER_SIZE = 4096;
+	 	                     int bytesRead;
+	 	                     byte[] buffer = new byte[BUFFER_SIZE];
+	 	                     while ((bytesRead = is.read(buffer)) != -1) {
+	 	                         os.write(buffer, 0, bytesRead);
+	 	                     }
+	 	                     row = sheet.createRow(i+1);
+	 	                     cell = row.createCell(5);
+	 		        		 cell.setCellValue(URLDecoder.decode(fileName,"UTF-8"));
+	 	                     i++;
+	 	                     File file = new File("C:\\Users\\15kso\\OneDrive\\바탕 화면\\detailimage\\디테일페이지.xls");
+	 	     	             FileOutputStream fos = null;
+	 	     	             fos = new FileOutputStream(file);
+	 	     	             workbook.write(fos);
+	 	                     os.close();
+	 	                     is.close();
+	 	                     System.out.println("======완료=====");
+	 	                 } else {
+	 	                     System.out.println("No file to download. Server replied HTTP code: " + responseCode);
+	 	                 }
+	 	                 
+	 	                 conn.disconnect();
+	 	             } catch (Exception e){
+	 	                 System.out.println("An error occurred while trying to download a file.");
+	 	                 e.printStackTrace();
+	 	                 try {
+	 	                     if (is != null){
+	 	                         is.close();
+	 	                     }
+	 	                     if (os != null){
+	 	                         os.close();
+	 	                     }
+	 	                 } catch (IOException e1){
+	 	                     e1.printStackTrace();
+	 	                 }
+	 	             }
+	 	        }
+	        
+	}
+
+}

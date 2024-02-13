@@ -1,0 +1,55 @@
+package com.kick.web;
+
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.kick.service.PostService;
+import com.kick.web.dto.post.PostDto;
+import com.kick.web.dto.post.PostViewDto;
+import com.kick.web.dto.post.RequestPostDto;
+
+import lombok.RequiredArgsConstructor;
+
+@CrossOrigin(origins = "http://localhost:3000")
+@RestController
+@RequestMapping("/api/post")
+@RequiredArgsConstructor
+public class PostController {
+	private final PostService postService;
+	
+	@GetMapping("/list/{searchSelect}/{searchTerm}") 
+	public Page<Object> postList(Pageable pageable,@PathVariable("searchSelect") String searchSelect,@PathVariable("searchTerm") String searchTerm){
+		return postService.postList(pageable,searchSelect,searchTerm);
+	} 
+	
+	@GetMapping("/view/{id}")
+	public PostViewDto postView(@PathVariable Long id){
+		return postService.postView(id);
+	}
+	
+	@PostMapping("/create")
+	public PostDto postSave(@RequestBody RequestPostDto requestPostDto) {
+		return postService.postSave(requestPostDto);
+	}
+	
+	@PutMapping("/update/{id}")
+	public PostDto postUpdate(RequestPostDto requestPostDto,Long id) {
+		return postService.postUpdate(requestPostDto,id);
+	}
+	
+	@DeleteMapping("/delete/{id}")
+	public void postDelete(@PathVariable Long id) {
+		postService.postDelete(id);
+	}
+}

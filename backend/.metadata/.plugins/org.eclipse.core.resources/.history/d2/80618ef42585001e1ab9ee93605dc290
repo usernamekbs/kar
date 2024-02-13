@@ -1,0 +1,41 @@
+package com.kick.web;
+
+
+import java.io.IOException;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.kick.dto.gallery.GalleryDto;
+import com.kick.dto.gallery.RequestGalleryDto;
+import com.kick.service.GalleryService;
+
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping("/api/gallery")
+@RequiredArgsConstructor
+public class GalleryController {
+	
+	private final GalleryService galleryService;
+	
+	@GetMapping("/list") 
+	public Page<GalleryDto> galleryList(Pageable pageable){
+		return galleryService.galleryList(pageable);
+	}
+	
+	@PostMapping("/create") 
+	public GalleryDto gallerySave(@RequestPart(value="requestGalleryDto",required=false) RequestGalleryDto requestGalleryDto,
+			@RequestParam(value = "files", required = false)MultipartFile file) throws IOException{
+		return galleryService.gallerySave(requestGalleryDto,file);
+	}
+}

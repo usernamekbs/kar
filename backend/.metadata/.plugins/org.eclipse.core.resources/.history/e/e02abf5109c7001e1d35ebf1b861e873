@@ -1,0 +1,57 @@
+package com.kick.service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.kick.Coupang;
+import com.kick.CoupangImages;
+import com.kick.CoupangItems;
+import com.kick.dto.CoupangDto;
+import com.kick.entity.CoupangImagesRepository;
+import com.kick.entity.CoupangItemsRepository;
+import com.kick.entity.CoupangRepository;
+
+@Transactional
+@Service
+public class CoupangService {
+	
+	@Autowired CoupangRepository coupangRepository; 
+	@Autowired CoupangItemsRepository coupangItemsRepository;
+	@Autowired CoupangImagesRepository coupangImagesRepository;
+	
+//	@Transactional(readOnly = true)
+//	public CoupangDto coupangList() {
+//		Optional<Coupang> coupangs  = coupangRepository.findAll((long)392);
+//		System.out.println("!!!!!!!!!!!!!!!!!!!!!");
+//		System.out.println(coupangs); 
+//		List<CoupangItems> itemlist= new ArrayList<>();
+//		if(coupangs.isPresent()) {
+//			List<CoupangItems> items = coupangItemsRepository.findAll((long)392);
+//			List<CoupangImages> image = coupangImagesRepository.findAll((long)392);
+//			for(CoupangItems item : items) {
+//				coupangs.get().getItems().add(item);
+//				item.images(image);
+//				
+//			}
+//			return new CoupangDto(coupangs,items);
+//		}else {
+//			return null;
+//		}
+//	} 
+
+	
+	@Transactional(readOnly = true)
+	public CoupangDto coupangList2() {
+		List<CoupangItems> items = coupangItemsRepository.findAll((long)411);
+		Optional<Coupang> result= coupangRepository.findAllList((long) 411);
+		return new CoupangDto(result,items);
+	} 
+	
+}

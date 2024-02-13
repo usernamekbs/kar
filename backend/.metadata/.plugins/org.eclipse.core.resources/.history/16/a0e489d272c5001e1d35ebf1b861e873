@@ -1,0 +1,31 @@
+package com.kick.controller;
+
+import java.util.List;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.kick.Coupang;
+import com.kick.dto.CoupangDto;
+import com.kick.service.CoupangService;
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequestMapping("/api/coupang")
+@RequiredArgsConstructor
+public class CoupangController {
+	
+	private final CoupangService service;
+	
+	@GetMapping("/list")
+	public CoupangDto coupangList(){
+		System.out.println("!!!!!!!!!");
+		return service.coupangList();
+	}
+	
+	@GetMapping("/list2")
+	public void coupangList2(){
+		System.out.println("!!!!!!!!!");
+	}
+}

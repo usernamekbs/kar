@@ -1,0 +1,36 @@
+package com.kick.web;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.kick.service.LikesService;
+import com.kick.web.dto.likes.LikesDto;
+
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/likes")
+@RequiredArgsConstructor
+public class LikesController {
+	
+	private final LikesService likesService;
+	
+	@PostMapping("/create")
+	public Long likeSave(@RequestBody LikesDto like) {
+		long count =likesService.likeSave(like.getPostId(),like.getUserId());
+		System.out.println("=================="+count);
+		return count;
+	} 
+	
+	@GetMapping("/list")
+	public Long likeList(@RequestBody LikesDto like) {
+		long count =likesService.likeList(like.getPostId());
+		System.out.println("=================="+count);
+		return count;
+	} 
+}

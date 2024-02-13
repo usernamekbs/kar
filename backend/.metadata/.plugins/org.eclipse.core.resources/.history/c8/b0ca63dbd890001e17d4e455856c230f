@@ -1,0 +1,31 @@
+package com.kick;
+
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+import dev.failsafe.internal.util.Assert;
+
+public class b {
+	 static WebDriver driver = null;
+     public static void main(String[] args) throws InterruptedException {
+        
+        
+       System.setProperty("webdriver.chrome.driver", "C:\\Users\\AJEET\\Downloads\\chromedriver_win32\\chromedriver.exe");
+       driver = new ChromeDriver();
+       driver.manage().window().maximize();
+       driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+       driver.get("https://www.google.com/");
+       driver.findElement(By.name("q")).sendKeys("Facebook");
+
+       Thread.sleep(2000);                          // Put this sleep command.
+
+       driver.findElement(By.xpath("//div[@class='UUbT9']/div[2]/ul[1]//following::span[1]")).click();
+       Assert.assertTrue("facebook - Google Search", true);
+        
+        
+
+       }
+}

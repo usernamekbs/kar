@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete element from project &apos;KickAndrush&apos;&#x0D;&#x0A;- Original project: &apos;KickAndrush&apos;&#x0D;&#x0A;- Original element: &apos;KickAndrush/src/main/java/com.kick.web.dto.comments&apos;" description="Delete element" element1="/src\/main\/java=/gradle_scope=/main=/=/gradle_used_by_scope=/main,test=/&lt;com.kick.web.dto.comments" elements="1" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1693806065941" subPackages="false" version="1.0"/>
+</session>

@@ -1,0 +1,68 @@
+package com.kick;
+
+import java.awt.AlphaComposite;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.support.ui.Select;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import com.kick.entity.Product;
+import com.kick.entity.Product11;
+import com.kick.entity.Product11Repository;
+import com.kick.entity.ProductRepository;
+
+@SpringBootTest
+class sad {
+    
+	@Test
+	//test 코드에서 transactional 사용 하지 마라
+	void asd() throws InterruptedException, IOException {
+		 System.setProperty("webdriver.chrome.driver", "path/to/chromedriver");
+		    WebDriver driver = new ChromeDriver();
+		    WebDriverWait wait = new WebDriverWait(driver, 10); // 10-second explicit wait
+
+		    try {
+		      driver.get("https://example.com");
+
+		      // Wait until the element is visible and interactable
+		      WebElement button = wait.until(ExpectedConditions.elementToBeClickable(By.id("buttonId")));
+
+		      // Perform actions on the element
+		      button.click();
+		    } catch (ElementNotInteractableException e) {
+		      System.out.println("Element not interactable: " + e.getMessage());
+		    } finally {
+		      driver.quit();
+		    }	
+	}
+	
+}

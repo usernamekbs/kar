@@ -1,0 +1,40 @@
+spring:
+  web:
+    resources:
+      static-locations: META-INF:/resources, classpath:/resources, classpath:/static, classpath:/static/dist
+  # Database
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/KickAndRush
+    username: postgres
+    password: postgres
+  devtools:
+    restart:
+      log-condition-evaluation-delta: false
+  # jpa properties
+  jpa:
+    hibernate:
+      ddl-auto: update # When you launch the application for the first time - switch "none" at "create"
+#    show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    generate-ddl: true
+    properties:
+      hibernate:
+    show_sql: true
+    format_sql: true
+  servlet:
+    multipart:
+      location: C:\image\upload
+      maxFileSize: 200MB
+      maxRequestSize: 100MB
+  mail:
+    host: smtp.naver.com 
+    port: 465
+    username: qudtn6085@naver.com
+    password: qudtn!45890
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.ssl.trust: smtp.naver.com

@@ -1,0 +1,45 @@
+package com.kick.web;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.kick.web.dto.mail.ReportService;
+
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@CrossOrigin(origins = "http://localhost:3000")
+@RestController
+@RequestMapping("/api/report")
+@RequiredArgsConstructor
+@Slf4j
+public class ReportController {
+	
+	private final JavaMailSender javaMailSender;
+	private final ReportService reportService;
+	@PostMapping("/create") 
+	public void sendReport() {
+		MimeMessage message = javaMailSender.createMimeMessage();
+		
+		try {
+			MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, false, "UTF-8");
+	        mimeMessageHelper.setTo("asd");
+	        mimeMessageHelper.setSubject("asd");
+	        mimeMessageHelper.setText("asd", true);
+	        javaMailSender.send(message); 
+	         
+		}catch(MessagingException e) {
+			 log.error("failed to send email", e);
+		}
+			
+	}  
+}

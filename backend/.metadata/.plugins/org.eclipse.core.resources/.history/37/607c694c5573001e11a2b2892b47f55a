@@ -1,0 +1,178 @@
+package com.kick;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.util.SystemOutLogger;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.internal.build.AllowSysOut;
+import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.support.ui.Select;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class SeleniumApplicationTests3 {
+    
+	public static final String filePath= "C:\\Users\\15kso\\OneDrive\\바탕 화면\\새 폴더\\옵션.xls";
+    
+	@Test
+	void asd() throws InterruptedException, IOException {
+		EdgeDriver driver;
+	 	EdgeOptions options = new EdgeOptions();
+        driver = new EdgeDriver(options);
+        
+	    driver.get("https://trycozy.com/member/login.html");
+        WebElement member_id=driver.findElement(By.id("member_id"));
+        WebElement member_passwd=driver.findElement(By.id("member_passwd"));
+        WebElement login=driver.findElement(By.cssSelector("form > div > div > fieldset > a > img"));
+        member_id.sendKeys("qudtn6085");
+        member_passwd.sendKeys("qudtn4589");
+        login.click();
+        Thread.sleep(5000);
+        //19까지 함 APPLE
+        driver.navigate().to("https://trycozy.com/product/list.html?cate_no=485");
+        
+        //변수
+        List<String> urls = new ArrayList<>();
+        WebElement totalCount=driver.findElement(By.cssSelector("#contents > div.xans-element-.xans-product.xans-product-normalpackage > div.xans-element-.xans-product.xans-product-normalmenu > div > p > strong"));
+        //tcnt
+        for(int i=1; i<=1;i++) {
+        	WebElement nextPage=driver.findElement(By.cssSelector("#contents > div.xans-element-.xans-product.xans-product-normalpaging > p:nth-child(4) > a > img"));
+        	List<WebElement> elements = driver.findElements(By.cssSelector("#contents > div.xans-element-.xans-product.xans-product-normalpackage > div.xans-element-.xans-product.xans-product-listnormal > ul > li > div > a"));
+        	
+        	for(WebElement ele : elements) {
+        		urls.add(ele.getAttribute("href"));
+        	}
+        	nextPage.click();
+        }
+        
+        for(String url : urls) {
+        	driver.navigate().to(url);
+        	//셀렉트박스는 두개값 만 가져옴
+        	List<WebElement> selectLists = driver.findElements(By.cssSelector("#contents > div.xans-element-.xans-product.xans-product-detail > div.detailArea > div.infoArea > table:nth-child(10) > tbody > tr > td > select"));
+        	List<String> selectOption = new ArrayList<>();
+        	List<String> selectOption2 = new ArrayList<>();
+        	List<String> selectCountOption = new ArrayList<>();
+        	//상세페이지에있는 제목 가격 온라인판매가 제조사
+        	WebElement title=driver.findElement(By.cssSelector("#contents > div.xans-element-.xans-product.xans-product-detail > div.detailArea > div.infoArea > h2"));
+        	WebElement realPrice=driver.findElement(By.xpath("//*[@id=\"contents\"]/div[2]/div[2]/div[2]/div[3]/table/tbody/tr[4]/td/span"));
+        	WebElement price=driver.findElement(By.cssSelector("#contents > div.xans-element-.xans-product.xans-product-detail > div.detailArea > div.infoArea > div.xans-element-.xans-product.xans-product-detaildesign > table > tbody > tr:nth-child(2) > td > strong > span > strong"));
+        	WebElement company=driver.findElement(By.xpath("//*[@id=\"contents\"]/div[2]/div[2]/div[2]/div[3]/table/tbody/tr[5]/td/span"));
+        	//셀렉트
+        	for(WebElement sel : selectLists) {
+        		
+        		Select selectOptions = new Select(sel);
+        		selectOptions.selectByIndex(2);
+	        	List<WebElement> optionList = selectOptions.getOptions();
+	        	optionList.remove(0);
+	        	
+	        	for(WebElement option : optionList) {
+	        		if(sel.getAttribute("id").equals("product_option_id1")) {
+	        			if(option.isEnabled()) {
+		        			selectOption.add(option.getText());
+	        			}
+	        		}else {
+	        			if(option.isEnabled()) {
+		        			selectOption2.add(option.getText());
+	        			}
+	        		}
+	        	}
+        	}
+        	
+        	for(String option:selectOption) {
+        		for(String option2:selectOption2) {
+        			selectCountOption.add(option+"|"+option2+"|");
+        			productDetail(title.getText(),price.getText(),realPrice.getText(),company.getText(),selectCountOption);
+        		}
+        	}
+        	
+        	if(selectCountOption.size()<199) {
+        		for(String s:selectCountOption) {
+        			System.out.println(s);
+        		}
+        		
+        	}else {
+        		System.out.println("count200초과"+selectCountOption.size());
+        	}
+        }
+	}
+	
+	private void productDetail(String title, String price, String realPrice, String company, List<String> selectCountOption) {
+		System.out.println();
+		System.out.println();
+		for(String mergeOption : selectCountOption) {
+			System.out.println(mergeOption);
+		}
+	}
+	
+	
+//	@Test
+//	void contextLoads(List<String> option) throws InterruptedException, IOException  {
+//		
+//		InputStream inputStream = null;
+//        Workbook workbook = null;
+//        OutputStream outputStream = null;
+//        try {
+//            inputStream = new FileInputStream(filePath);
+//            workbook = WorkbookFactory.create(inputStream);
+//
+//            // Get first sheet of Excel file
+//            Sheet sheet = workbook.getSheetAt(0);
+//            // get latest index number
+//            int rowIndex = sheet.getLastRowNum();
+////            for (Employee employee : employees) {
+//                // Populate the index value of new row
+//                rowIndex = rowIndex + 1;
+//                createNewRow(workbook, sheet, rowIndex);
+////            }
+//            // Write updated Excel file
+//            outputStream = new FileOutputStream(filePath);
+//            workbook.write(outputStream);
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        } finally {
+//            try {
+//                inputStream.close();
+//                workbook.close();
+//                outputStream.close();
+//            }catch (Exception ex) {
+//                ex.printStackTrace();
+//            }
+//        }
+//	}
+//	
+//	private void createNewRow(Workbook workbook, Sheet sheet, int rowIndex) {
+//        Row row = sheet.createRow(rowIndex);
+//
+//        Cell cell = row.createCell(0);
+//        cell.setCellValue("asd");
+//
+//        cell = row.createCell(1);
+//        cell.setCellValue("asd");
+//
+//        cell = row.createCell(2);
+//        cell.setCellValue("asd");
+//    }
+}

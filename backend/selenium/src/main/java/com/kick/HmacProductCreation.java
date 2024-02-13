@@ -1,0 +1,177 @@
+package com.kick;
+
+import com.coupang.openapi.sdk.Hmac;
+import com.kick.dto.CoupangDto;
+import com.kick.entity.CoupangRepository;
+import com.kick.service.CoupangService;
+
+import lombok.RequiredArgsConstructor;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+//import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.IOException;
+import java.util.Optional;
+
+@RequiredArgsConstructor
+public class HmacProductCreation {
+	
+    private static final String HOST = "api-gateway.coupang.com";
+    private static final int PORT = 443;
+    private static final String SCHEMA = "https";
+    //replace with your own accessKey
+    private static final String ACCESS_KEY = "f20949fb-c3f6-417a-a357-94d4e6f405d6";
+    //replace with your own secretKey
+    private static final String SECRET_KEY = "3a95b96776f516b6e4d047d838b6d44470c9dc4f";
+
+    private final CoupangService service;
+    
+    public void test() {
+        //params
+        String method = "POST";
+        String path = "/v2/providers/seller_api/apis/api/v1/marketplace/seller-products";
+        //replace with your own product registration json data
+        String strjson="{\r\n"
+        		+ "    \"sellerProductName\": \"[PEANUTS]스누피 카툰 소프트젤리케이스\",\r\n"
+        		+ "    \"vendorId\": \"A00962060\",\r\n"
+        		+ "    \"saleStartedAt\": \"2024-01-19T00:00:00\",\r\n"
+        		+ "    \"saleEndedAt\": \"2099-01-19T00:00:00\",\r\n"
+        		+ "    \"displayProductName\": null,\r\n"
+        		+ "    \"deliveryMethod\": \"SEQUENCIAL\",\r\n"
+        		+ "    \"deliveryCompanyCode\": \"EPOST\",\r\n"
+        		+ "    \"deliveryChargeType\": \"NOT_FREE\",\r\n"
+        		+ "    \"deliveryCharge\": 3000,\r\n"
+        		+ "    \"freeShipOverAmount\": 30000,\r\n"
+        		+ "    \"deliveryChargeOnReturn\": 3000,\r\n"
+        		+ "    \"remoteAreaDeliverable\": \"N\",\r\n"
+        		+ "    \"unionDeliveryType\": \"NOT_UNION_DELIVERY\",\r\n"
+        		+ "    \"returnCenterCode\": \"1001694769\",\r\n"
+        		+ "    \"returnChargeName\": \"경기도 안산시 상록구 충장로 565 111동1203호\",\r\n"
+        		+ "    \"companyContactNumber\": \"010-8900-6085\",\r\n"
+        		+ "    \"returnZipCode\": \"15287\",\r\n"
+        		+ "    \"returnAddress\": \"경기도 안산시 상록구 충장로 565\",\r\n"
+        		+ "    \"returnAddressDetail\": \"111동1203호\",\r\n"
+        		+ "    \"returnCharge\": 3000,\r\n"
+        		+ "    \"outboundShippingPlaceCode\": 19389011,\r\n"
+        		+ "    \"vendorUserId\": \"qudtn0295\",\r\n"
+        		+ "    \"requested\": true,\r\n"
+        		+ "    \"items\": [\r\n"
+        		+ "        {\r\n"
+        		+ "            \"itemName\": \"[Sanrio]산리오 캐릭터즈 클리어 쿠킹 투명젤리케이스\",\r\n"
+        		+ "            \"originalPrice\": 18400,\r\n"
+        		+ "            \"salePrice\": 18400,\r\n"
+        		+ "            \"maximumBuyCount\": 10,\r\n"
+        		+ "            \"maximumBuyForPerson\": 0,\r\n"
+        		+ "            \"maximumBuyForPersonPeriod\": 1,\r\n"
+        		+ "            \"outboundShippingTimeDay\": 2,\r\n"
+        		+ "            \"unitCount\": 0,\r\n"
+        		+ "            \"adultOnly\": \"EVERYONE\",\r\n"
+        		+ "            \"taxType\": \"TAX\",\r\n"
+        		+ "            \"parallelImported\": \"NOT_PARALLEL_IMPORTED\",\r\n"
+        		+ "            \"overseasPurchased\": \"NOT_OVERSEAS_PURCHASED\",\r\n"
+        		+ "            \"pccNeeded\": false,\r\n"
+        		+ "            \"images\": [\r\n"
+        		+ "                {\r\n"
+        		+ "                    \"imageOrder\": 0,\r\n"
+        		+ "                    \"imageType\": \"REPRESENTATION\",\r\n"
+        		+ "                    \"cdnPath\": null,\r\n"
+        		+ "                    \"vendorPath\": \"/thmb25/산리오_투명 젤리_클리어 쿠킹.png\"\r\n"
+        		+ "                }\r\n"
+        		+ "            ],\r\n"
+        		+ "            \"attributes\": [\r\n"
+        		+ "                {\r\n"
+        		+ "                    \"attributeTypeName\": \"옵션\",\r\n"
+        		+ "                    \"attributeValueName\": \"아이폰15\"\r\n"
+        		+ "                }\r\n"
+        		+ "            ],\r\n"
+        		+ "            \"contents\": [\r\n"
+        		+ "                {\r\n"
+        		+ "                    \"contentsType\": \"TEXT\",\r\n"
+        		+ "                    \"contentDetails\": [\r\n"
+        		+ "                        {\r\n"
+        		+ "                            \"content\": \"<p align=\\\"center\\\"><img src='https://qudtn0295.cafe24.com/detailImage25/case_notice.jpeg'/></p><p align=\\\"center\\\"><img src='https://qudtn0295.cafe24.com/detailImage25/산리오_투명 젤리_클리어 쿠킹.jpeg'/></p><p align=\\\"center\\\"><img src='https://qudtn0295.cafe24.com/detailImage25/download.jpeg'/></p>\",\r\n"
+        		+ "                            \"detailType\": \"TEXT\"\r\n"
+        		+ "                        }\r\n"
+        		+ "                    ]\r\n"
+        		+ "                }\r\n"
+        		+ "            ]\r\n"
+        		+ "        }\r\n"
+        		+ "    ]\r\n"
+        		+ "}";
+        
+        CloseableHttpClient client = null;
+        try {
+            //create client
+            client = HttpClients.createDefault();
+            //build uri
+            URIBuilder uriBuilder = new URIBuilder()
+                    .setPath(path);
+
+            /********************************************************/
+            //authorize, demonstrate how to generate hmac signature here
+            String authorization = Hmac.generate(method, uriBuilder.build().toString(), SECRET_KEY, ACCESS_KEY);
+            //print out the hmac key
+            System.out.println(authorization);
+            /********************************************************/
+
+            uriBuilder.setScheme(SCHEMA).setHost(HOST).setPort(PORT);
+            HttpPost requestPost = new HttpPost(uriBuilder.build().toString());
+
+            StringEntity params =new StringEntity(strjson,"UTF-8");
+            
+            /********************************************************/
+            // set header, demonstarte how to use hmac signature here
+            requestPost.addHeader("Authorization", authorization);
+            /********************************************************/
+            requestPost.addHeader("content-type", "application/json");
+            requestPost.setEntity(params);
+            CloseableHttpResponse response = null;
+            try {
+                //execute post request
+                response = client.execute(requestPost);
+                //print result
+                System.out.println("status code:" + response.getStatusLine().getStatusCode());
+                System.out.println("status message:" + response.getStatusLine().getReasonPhrase());
+                HttpEntity entity = response.getEntity();
+                System.out.println("result:" + EntityUtils.toString(entity));
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (response != null) {
+                    try {
+                        response.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (client != null) {
+                try {
+                    client.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        HmacProductCreation hmacTest = new HmacProductCreation();
+        hmacTest.test();
+    }
+
+	public HmacProductCreation() {
+		this.service = new CoupangService();
+	}
+}
